@@ -57,6 +57,7 @@ fn solve_first(buf: &[u8; 100], res: &mut u16) {
     *res += ( (first.1 * 10) + second ) as u16;
 }
 
+// General for all jolt sizes => jolt = 2 will give the same answer as solve_first()
 fn solve_second(buf: &[u8; 100], jolt_amount: usize, res: &mut u64) {
     debug_assert!(jolt_amount <= buf.len(), "Jolt amount cannot be bigger than buf len.");
 
