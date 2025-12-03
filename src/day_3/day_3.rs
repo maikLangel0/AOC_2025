@@ -80,7 +80,7 @@ fn solve_second(buf: &[u8; 100], jolt_amount: usize, res: &mut u64) {
             }
 
             if curr.1 < *num {
-                curr = (*num, idx);
+                curr = (idx, *num);
             }
         }
 
