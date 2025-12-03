@@ -1,6 +1,6 @@
-use std::{error::Error, fs::File, io::{BufRead, BufReader}, result::Result};
+use std::{fs::File, io::{BufRead, BufReader}};
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() {
     let file = File::open("src\\day_3\\input.txt").unwrap();
     let reader = BufReader::new(&file);
 
@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for line in reader.lines() {
 
-        let line = line?;
+        let line = line.expect("tf line-read failed!");
 
         buf.copy_from_slice(line.as_bytes());
         buf = buf.map(|n| n - '0' as u8); // Converting from ascii representation of number to u8
@@ -21,8 +21,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     println!("RES 1: {}", res_first);
     println!("RES 2: {}", res_second);
-
-    Ok(())
 }
 
 fn solve_first(buf: &[u8; 100], res: &mut u16) {
