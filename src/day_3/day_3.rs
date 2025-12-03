@@ -38,7 +38,7 @@ fn solve(buf: &[u8], jolt_amount: usize, res: &mut u64) {
 
     for jolt in (1..=jolt_amount).rev() {
         let buf_iter = buf.iter()
-            .take(buf.len() - jolt as usize + 1) // No need to iter over jolts that go past the current max digit
+            .take(buf.len() - jolt + 1) // No need to iter over jolts that go past the current max digit
             .skip(idx_of_curr_jolt as usize); // Skips to the idx where last jolt was found
 
         //             pos|val
