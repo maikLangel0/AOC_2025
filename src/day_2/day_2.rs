@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut result1: u64 = 0;
     let mut result2: u64 = 0;
 
-    let mut buf: Vec<u8> = Vec::new();
+    let mut buf: Vec<u8> = Vec::with_capacity(256);
     let file = File::open("src\\day_2\\input.txt")?;
 
     let mut reader = BufReader::new(&file);
@@ -23,9 +23,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         let id_range_string = String::from_utf8(buf.clone())?;
         buf.clear();
 
-        let (bottom, top) = id_range_string.split_once('-').map(|e| (e.0.trim(), e.1.trim().replace(',', ""))).unwrap();
-        let bottom = bottom.parse::<u64>()?;
-        let top = top.parse::<u64>()?;
+        let (bottom, mut top) = id_range_string.split_once('-').unwrap();
+        if top.chars().last().unwrap() == ',' { top = &top[..top.len() - 1] }
+
+        let bottom = bottom.trim().parse::<u64>()?;
+        let top = top.trim().parse::<u64>()?;
 
         solve_first(bottom, top, &mut result1);
         solve_second(bottom, top, &mut result2);

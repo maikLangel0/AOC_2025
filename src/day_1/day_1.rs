@@ -58,9 +58,8 @@ impl<T: Sized + Read> SafeDial<T> {
                 },
                 'L' => {
                     let raw_rotations = value / self.max_num;
-                    let rot_remainders = (current_pos != 0 && value % self.max_num >= current_pos) as u16;
-
-                    rotations = raw_rotations + rot_remainders;
+                    let rot_remainder = (current_pos != 0 && value % self.max_num >= current_pos) as u16;
+                    rotations = raw_rotations + rot_remainder;
 
                     current_pos = (current_pos + self.max_num - (value % self.max_num)) % self.max_num;
                 },
