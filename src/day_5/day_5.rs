@@ -12,6 +12,15 @@ fn buf_to_num(buf: &[u8; BUFSIZE]) -> u64 {
     }
     res
 }
+
+/// Does basically the exact same as the .fill() on [[T]], but here it does only exactly what it has to
+#[inline(always)]
+fn fill_to_index(buf: &mut [u8; BUFSIZE], idx: usize, val: u8) {
+    for num in buf[0..idx].iter_mut() {
+        *num = val.clone();
+    }
+}
+
 // I COULD OVERKILL THE SOLUTION TO PART 2 IF I COULD USE MY BRAIN BETTER; I FEEL LIKE IT
 // could possibly do some in-place sorting on insertion instead of allocating a new Vec
 fn parse_ranges<T: Read>(reader: &mut BufReader<T>) -> Vec<(u64, u64)> {
@@ -25,13 +34,19 @@ fn parse_ranges<T: Read>(reader: &mut BufReader<T>) -> Vec<(u64, u64)> {
 
         if line.is_empty() { break } // End of ranges
 
+        let mut top: u64 = 0; // Niche asf optimization cuz I can turn topbuf to num when c == '-'
+
         let mut write_to_top = true;
         let mut digit: usize = 0; // current digit placement in buf
 
         for c in line.bytes().rev() {
             match c {
-                b'-' => {
+                b'-' => { // Hits this only once so fill_to_index & fetching top is optimal here
                     write_to_top = !write_to_top;
+
+                    top = buf_to_num(&topbuf);
+                    fill_to_index(&mut topbuf, digit, 0);
+
                     digit = 0;
                 },
                 _   => {
@@ -48,12 +63,9 @@ fn parse_ranges<T: Read>(reader: &mut BufReader<T>) -> Vec<(u64, u64)> {
         }
         // println!("bot: {:?} | top: {:?}", botbuf, topbuf);
 
-        let (bottom, top): (u64, u64) = (buf_to_num(&botbuf), buf_to_num(&topbuf));
+        ranges.push( (buf_to_num(&botbuf), top) );
 
-        ranges.push((bottom, top));
-
-        topbuf.fill(0);
-        botbuf.fill(0);
+        fill_to_index(&mut botbuf, digit, 0);
     }
 
     ranges.sort_by(|a, b| a.0.cmp(&b.0));
@@ -66,7 +78,7 @@ fn parse_ranges<T: Read>(reader: &mut BufReader<T>) -> Vec<(u64, u64)> {
             curr.1 = curr.1.max(*top); // Sets curr top to either itself or new top
         } else {                       // if not, curr is a completed range
             merged.push(curr);
-            curr = (*bottom, *top);    // Set curr to iters values
+            curr = (*bottom, *top);    // Set curr to iters' values
         }
     }
 
